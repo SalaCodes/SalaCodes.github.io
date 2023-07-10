@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Console game</title>
+  <style>
+    body {
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #moneyButton, #upgradeButton1, #upgradeButton2, #shopButton {
+      font-size: 20px;
+      padding: 10px 20px;
+    }
+
+    #box {
+      font-size: 24px;
+      padding: 20px;
+    }
+
+    #message {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    #upgradeButton1, #upgradeButton2 {
+      display: none;
+    }
+
+    .shop-open #upgradeButton1, .shop-open #upgradeButton2 {
+      display: inline-block;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="button-container">
+    <button id="upgradeButton1">Fake Biljonair(Cost: 10)</button>
+    <button id="upgradeButton2">Money Monkey Maker(MMM) (Cost: 20)</button>
+    <button id="shopButton">Shop</button>
+    <button id="moneyButton">Money</button>
+  </div>
+  <div id="message"></div>
+
+  <script>
+    // Get references to the buttons and message
+    const shopButton = document.getElementById("shopButton");
+    const moneyButton = document.getElementById("moneyButton");
+    const upgradeButton1 = document.getElementById("upgradeButton1");
+    const upgradeButton2 = document.getElementById("upgradeButton2");
+    const message = document.getElementById("message");
+
+    // Set the initial values
+    let money = 0;
+    let score = 1;
+    let upgrade1 = 0;
+    let upgrade1Cost = 10;
+    let upgrade2 = 0;
+    let upgrade2Cost = 20;
+    let moneyButtonCooldown = false;
+
+    // Function to update the money display
+    function updateMoneyDisplay() {
+      message.innerText = `Money: ${money}`;
+    }
+
+    // Function to update the upgrade button text
+    function updateUpgradeButtonText() {
+      upgradeButton1.innerText = `Upgrade (Cost: ${upgrade1Cost})`;
+      upgradeButton2.innerText = `Upgrade (Cost: ${upgrade2Cost})`;
+    }
+
+    // Add an event listener to the shop button
+    shopButton.addEventListener("click", () => {
+      const isShopOpen = shopButton.classList.toggle("shop-open");
+      moneyButton.disabled = isShopOpen;
+      moneyButton.style.display = isShopOpen ? "none" : "inline-block";
+      upgradeButton1.disabled = !isShopOpen;
+      upgradeButton1.style.display = isShopOpen ? "inline-block" : "none";
+      upgradeButton2.disabled = !isShopOpen;
+      upgradeButton2.style.display = isShopOpen ? "inline-block" : "none";
+    });
+
+    // Add an event listener to the money button
+    moneyButton.addEventListener("click", () => {
+      if (!moneyButtonCooldown) {
+        money += score;
+        updateMoneyDisplay();
+        moneyButtonCooldown = true;
+        moneyButton.disabled = true;
+        setTimeout(() => {
+          moneyButtonCooldown = false;
+          moneyButton.disabled = false;
+        }, 1000);
+      }
+    });
+
+    // Add an event listener to upgrade button 1
+    upgradeButton1.addEventListener("click", () => {
+      if (money >= upgrade1Cost) {
+        score *= 2;
+        money -= upgrade1Cost;
+        upgrade1++;
+        upgrade1Cost *= 2;
+        message.innerText = `Upgrade purchased. Money per click doubled. Upgrade cost: ${upgrade1Cost}`;
+        updateMoneyDisplay();
+        updateUpgradeButtonText();
+      } else {
+        message.innerText = "Insufficient funds to purchase the upgrade.";
+      }
+    });
+
+    // Add an event listener to upgrade button 2
+    upgradeButton2.addEventListener("click", () => {
+      if (money >= upgrade2Cost) {
+        upgrade2++;
+        money -= upgrade2Cost;
+        upgrade2Cost *= 2;
+        message.innerText = `Upgrade purchased. Money per second increased by 1. Upgrade cost: ${upgrade2Cost}`;
+        updateMoneyDisplay();
+        updateUpgradeButtonText();
+      } else {
+        message.innerText = "Insufficient funds to purchase the upgrade.";
+      }
+    });
+  </script>
+</body>
+</html>
